@@ -9,7 +9,8 @@
 <body>
 <style id="hljs_style">
 .md-container {font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;font-size: 16px;line-height: 1.5;word-wrap: break-word;}.md-container * {box-sizing: border-box}.md-container pre {margin: 0; padding: 16px;background: #f8f8f8;overflow-x: auto;border-radius: 3px;}
-.md-container p {margin-top: 0;margin-bottom: 16px;}
+.md-container p,.md-container pre,.md-container blockquote,.md-container table,.md-container ol,.md-container ul {margin-top: 0;margin-bottom: 16px;}
+.md-container p + pre, .md-container p + blockquote {margin-top: -16px}
 .md-container blockquote {border-left: 0.21875em solid #dfe2e5;color: #6a737d;padding: 0 0.875em;margin: 0 0 16px 0;background-color: #f6f8fa;}
 .md-container blockquote >:first-child {margin-top: 0;}
 .md-container blockquote > pre {margin-bottom: 0;font-size: 0.88235em;}
@@ -19,6 +20,7 @@
 .md-container pre:last-child {margin-bottom: 16px;}
 .hljs{display:block;padding:.5em;}.hljs,.hljs-subst{color:#444}.hljs-comment{color:#888}.hljs-keyword,.hljs-attribute,.hljs-selector-tag,.hljs-meta-keyword,.hljs-doctag,.hljs-name{font-weight:700}.hljs-type,.hljs-string,.hljs-number,.hljs-selector-id,.hljs-selector-class,.hljs-quote,.hljs-template-tag,.hljs-deletion{color:#800}.hljs-title,.hljs-section{color:#800;font-weight:700}.hljs-regexp,.hljs-symbol,.hljs-variable,.hljs-template-variable,.hljs-link,.hljs-selector-attr,.hljs-selector-pseudo{color:#BC6060}.hljs-literal{color:#78A960}.hljs-built_in,.hljs-bullet,.hljs-code,.hljs-addition{color:#397300}.hljs-meta{color:#1f7199}.hljs-meta-string{color:#4d99bf}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}.hljs{display:block;padding:.5em;color:#333;}.hljs-comment,.hljs-quote{color:#998;font-style:italic}.hljs-keyword,.hljs-selector-tag,.hljs-subst{color:#333;font-weight:700}.hljs-number,.hljs-literal,.hljs-variable,.hljs-template-variable,.hljs-tag .hljs-attr{color:#008080}.hljs-string,.hljs-doctag{color:#d14}.hljs-title,.hljs-section,.hljs-selector-id{color:#900;font-weight:700}.hljs-subst{font-weight:400}.hljs-type,.hljs-class .hljs-title{color:#458;font-weight:700}.hljs-tag,.hljs-name,.hljs-attribute{color:navy;font-weight:400}.hljs-regexp,.hljs-link{color:#009926}.hljs-symbol,.hljs-bullet{color:#990073}.hljs-built_in,.hljs-builtin-name{color:#0086b3}.hljs-meta{color:#999;font-weight:700}.hljs-deletion{background:#fdd}.hljs-addition{background:#dfd}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}
 code.hljs,.md-container code.text {display: inline;font-size: 85%;border-radius: 3px;padding: .2em .4em;font-family: SFMono-Regular,Consolas,monospace,Liberation Mono,Menlo,Courier,monospace}code.hljs{background: #f8f8f8;}pre > code.hljs {display: block;padding: 0;background: transparent;}
+.md-container blockquote > pre code.hljs,.md-container blockquote > pre code.text {font-size: 100%;}
 </style>
 <div class="container">
     <div class="title">
@@ -44,6 +46,13 @@ code.hljs,.md-container code.text {display: inline;font-size: 85%;border-radius:
     </div>
     <div style="display: none;" id="mk_html"></div>
 </div>
+<script type="text/javascript">
+HTMLTextAreaElement.prototype.setCaretPosition = function(pos) {
+    this.selectionStart = pos;
+    this.selectionEnd = pos;
+    this.focus();
+}
+</script>
 <script type="text/javascript">
 const mkConverter = new showdown.Converter({
     strikethrough: true,
@@ -168,6 +177,15 @@ document.addEventListener("DOMContentLoaded", function() {
     mk_input.addEventListener("keypress", function(evt) {
         if (evt.ctrlKey && evt.keyCode === 10) {
             convert();
+        }
+    });
+    mk_input.addEventListener("keydown", function(evt) {
+        if (evt.keyCode === 9) {
+            evt.preventDefault();
+            let curCaretPos = this.selectionStart;
+            this.value = this.value.substring(0, curCaretPos) +
+                "    " + this.value.substring(curCaretPos, this.value.length);
+            this.setCaretPosition(curCaretPos + 4);
         }
     });
     mk_input.focus();
